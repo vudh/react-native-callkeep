@@ -83,6 +83,7 @@ import static io.wazo.callkeep.Constants.ACTION_ONGOING_CALL;
 import static io.wazo.callkeep.Constants.ACTION_AUDIO_SESSION;
 import static io.wazo.callkeep.Constants.ACTION_CHECK_REACHABILITY;
 import static io.wazo.callkeep.Constants.ACTION_WAKE_APP;
+import static io.wazo.callkeep.Constants.EXTRA_HAS_VIDEO;
 
 // @see https://github.com/kbagchiGWC/voice-quickstart-android/blob/9a2aff7fbe0d0a5ae9457b48e9ad408740dfb968/exampleConnectionService/src/main/java/com/twilio/voice/examples/connectionservice/VoiceConnectionServiceActivity.java
 public class RNCallKeepModule extends ReactContextBaseJavaModule {
@@ -148,12 +149,12 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
     }
 
     @ReactMethod
-    public void displayIncomingCall(String uuid, String number, String callerName) {
+    public void displayIncomingCall(String uuid, String number, String callerName, Boolean hasVideo) {
         if (!isConnectionServiceAvailable() || !hasPhoneAccount()) {
             return;
         }
 
-        Log.d(TAG, "displayIncomingCall number: " + number + ", callerName: " + callerName);
+        Log.d(TAG, "displayIncomingCall number: " + number + ", callerName: " + callerName + ", hasvideo: " + hasVideo);
 
         Bundle extras = new Bundle();
         Uri uri = Uri.fromParts(PhoneAccount.SCHEME_TEL, number, null);
@@ -161,6 +162,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
         extras.putParcelable(TelecomManager.EXTRA_INCOMING_CALL_ADDRESS, uri);
         extras.putString(EXTRA_CALLER_NAME, callerName);
         extras.putString(EXTRA_CALL_UUID, uuid);
+        extras.putBoolean(EXTRA_HAS_VIDEO, hasVideo);
 
         telecomManager.addNewIncomingCall(handle, extras);
     }
@@ -479,7 +481,7 @@ public class RNCallKeepModule extends ReactContextBaseJavaModule {
         String appName = this.getApplicationName(this.getAppContext());
 
         PhoneAccount.Builder builder = new PhoneAccount.Builder(handle, appName)
-                .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER);
+                .setCapabilities(PhoneAccount.CAPABILITY_CALL_PROVIDER  | PhoneAccount.CAPABILITY_VIDEO_CALLING);
 
         if (_settings != null && _settings.hasKey("imageName")) {
             int identifier = appContext.getResources().getIdentifier(_settings.getString("imageName"), "drawable", appContext.getPackageName());
