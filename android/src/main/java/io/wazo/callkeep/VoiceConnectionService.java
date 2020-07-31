@@ -129,7 +129,7 @@ public class VoiceConnectionService extends ConnectionService {
         Connection incomingCallConnection = createConnection(request);
 
         if (hasVideo) {
-             setVideoCallSupport(incomingCallConnection);
+             setVideoCallSupport(this.getApplicationContext(), incomingCallConnection);
         }
 
         incomingCallConnection.setRinging();
@@ -315,8 +315,8 @@ public class VoiceConnectionService extends ConnectionService {
         });
     }
 
-    private void setVideoCallSupport(Connection connection) {
-        VideoConnectionService VideoCallProvider = new VideoConnectionService();
+    private void setVideoCallSupport(Context context, Connection connection) {
+        VideoConnectionProvider VideoCallProvider = new VideoConnectionProvider(context, connection);
 
         connection.setVideoState(VideoProfile.STATE_BIDIRECTIONAL);
         connection.setVideoProvider(VideoCallProvider);
