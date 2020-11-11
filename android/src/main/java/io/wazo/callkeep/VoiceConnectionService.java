@@ -61,6 +61,7 @@ import static io.wazo.callkeep.Constants.EXTRA_CALL_NUMBER;
 import static io.wazo.callkeep.Constants.EXTRA_CALL_UUID;
 import static io.wazo.callkeep.Constants.EXTRA_HAS_VIDEO;
 
+
 // @see https://github.com/kbagchiGWC/voice-quickstart-android/blob/9a2aff7fbe0d0a5ae9457b48e9ad408740dfb968/exampleConnectionService/src/main/java/com/twilio/voice/examples/connectionservice/VoiceConnectionService.java
 @TargetApi(Build.VERSION_CODES.M)
 public class VoiceConnectionService extends ConnectionService {
@@ -84,7 +85,6 @@ public class VoiceConnectionService extends ConnectionService {
 
     public VoiceConnectionService() {
         super();
-        Log.e(TAG, "Constructor");
         isReachable = false;
         isInitialized = false;
         isAvailable = false;
@@ -261,8 +261,15 @@ public class VoiceConnectionService extends ConnectionService {
         capabilities |= Connection.CAPABILITY_HOLD;
         connection.setConnectionCapabilities(capabilities);
 
+
         connection.setInitializing();
         connection.setExtras(extras);
+
+        if (Build.VERSION.SDK_INT >= 30) {
+            Log.d(TAG, "Set Caller Number Verification");
+            connection.setCallerNumberVerificationStatus(Connection.VERIFICATION_STATUS_PASSED);
+        }
+
         currentConnections.put(extras.getString(EXTRA_CALL_UUID), connection);
 
         // Get other connections for conferencing
